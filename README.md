@@ -1,4 +1,4 @@
-# Proyecto 2: Base de Datos 2
+# Proyecto 3: Base de Datos 2
 
 ## Integrantes
 * Rodrigo Céspedes
