@@ -144,15 +144,15 @@ def knn_h(nombre, cant):
 
 #crear_insertar()
 
-a = knn_h('Abid_Hamid_Mahmud_Al-Tikriti_0001.jpg',15)
-b = knn_r('Abid_Hamid_Mahmud_Al-Tikriti_0001.jpg',15)
-c = range_q('Abid_Hamid_Mahmud_Al-Tikriti_0001.jpg',15)
+#a = knn_h('Abid_Hamid_Mahmud_Al-Tikriti_0001.jpg',15)
+#b = knn_r('Abid_Hamid_Mahmud_Al-Tikriti_0001.jpg',15)
+#c = range_q('Abid_Hamid_Mahmud_Al-Tikriti_0001.jpg',15)
 
-print(a)
-print('\n--------------------------\n')
-print(b)
-print('\n--------------------------\n')
-print(c)
+#print(a)
+#print('\n--------------------------\n')
+#print(b)
+#print('\n--------------------------\n')
+#print(c)
 
 
 
