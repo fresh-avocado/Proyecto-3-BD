@@ -3,7 +3,7 @@
        <div id="inputs" class="super-item">
           <div id="query-section" class="item">
                <h2>Query</h2>
-               <input class="query-input" type="text" v-model="query" placeholder="Query...">
+               <input type="file" accept=".jpg" v-on:change="prepareToQueryImage($event.target.name, $event.target.files)">
                <div class="space"></div>
                <input class="query-input" type="text" v-model="k" placeholder="k más relevantes (opcional)...">
                <div class="space"></div>
@@ -15,31 +15,19 @@
                     <h3>Query execution time: {{ queryTime }} ms.</h3>
                </div>
           </div>
-          <div lass="item">
-               <h2>Filter Resultados del Query</h2>
-               <input type="text" v-model="filterResult" placeholder="Filtrar tweets...">
-          </div>
           <div id="file-section" class="item">
                <h2>Archivo para Indexar</h2>
-               <input type="file" name="file" v-on:change="prepareToUploadFile($event.target.name, $event.target.files)">
-               <button v-on:click="uploadFile()">Indexar Archivo</button>
+               <input type="file" accept=".jpg" multiple name="file" v-on:change="prepareToUploadFile($event.target.name, $event.target.files)">
+               <button v-on:click="uploadImages()">Indexar Archivo</button>
                <div v-if="processingFile">
                     <h3>Indexing file...</h3>
                </div>
           </div>
        </div>
-       <div id="query-results" class="super-item" v-for="tweet in filterTweets" v-bind:key="tweet.id">
-            <div class="tweet-container">
-                 <p><strong>ID:</strong> {{ tweet.id }}</p>
-                 <p><strong>Date:</strong> {{ tweet.date.substr(0, 19) }}</p>
-                 <p><strong>Text:</strong> {{ tweet.text }}</p>
-                 <p><strong>User ID:</strong> {{ tweet.user_id }}</p>
-                 <p><strong>Username:</strong> {{ tweet.user_name }}</p>
-                 <div v-if="tweet.retweeted">
-                      <p><strong>Retweet Text:</strong> {{ tweet.RT_text }}</p>
-                      <p><strong>Retweet User ID:</strong> {{ tweet.RT_user_id }}</p>
-                      <p><strong>Retweet Username:</strong> {{ tweet.RT_user_name }}</p>
-                 </div>
+       <div id="query-results" class="super-item" v-for="image in images" v-bind:key="image.id">
+            <div class="image-container">
+               <!-- TODO: adaptar para mostrar las imagenes bien bonito -->
+               <h2>{{ image.name }}</h2>
             </div>
        </div>
   </div>
@@ -48,20 +36,17 @@
 <script>
 
 import axios from 'axios';
-import filterTweetsMixin from '../mixins/filterTweetsMixin';
 
 export default {
      name: 'HomeScreen',
      data() {
           return {
-               query: '',
-               archivo: null,
-               selectedName: '',
                selectedFiles: [],
-               filterResult: '',
+               selectedImageQueryName: '',
+               selectedImageQuery: '',
                processingQuery: false,
                processingFile: false,
-               tweets: [],
+               images: [],
                queryTime: '',
                queryWasProcessed: false,
                k: '',
@@ -70,25 +55,21 @@ export default {
      created() {
           console.log("component was created");
      },
-     mixins: [
-          filterTweetsMixin
-     ],
      methods: {
-          uploadFile() {
+          uploadImages() {
                if (this.selectedFiles.length === 0) {
                     alert("Seleccione un archivo para indexar.")
                     return;
                }
-               console.log(`NAME: ${this.selectedName}`);
-               console.log(`FILES: ${this.selectedFiles[0]}`);
+               console.log(`FILES: ${this.selectedFiles}`);
                this.processingFile = true;
 
                let formData = new FormData();
 
-               formData.append('file', this.selectedFiles[0]);
+               formData.append('file', this.selectedFiles);
 
                axios.post(
-                    'http://127.0.0.1:5000/uploadFile',
+                    'http://127.0.0.1:5000/uploadImages',
                     formData,
                     {
                          headers: {
@@ -105,40 +86,56 @@ export default {
                });
 
           },
+          prepareToQueryImage(name, files) {
+               if (files.length === 0) {
+                    console.log("Need one file to index.");
+                    return;
+               }
+               console.log("Selected Query Name: " + this.selectedImageQueryName);
+               this.selectedImageQueryName = name;
+               this.selectedImageQuery = files[0];
+          },
           prepareToUploadFile(name, files) {
                if (files.length === 0) {
                     console.log("Need one file to index.");
                     return;
                }
-               this.selectedName = name;
                this.selectedFiles = files;
           },
           processQuery() {
-               if (this.query === '') {
-                    alert("El query debe tener al menos un caracter.")
-                    console.log("Cannot process empty query.");
-                    return;
-               }
+               // FIXME: arreglar validación
+               // if (this.selectedImageQueryName === '') {
+               //      alert("Debe seleccionar una imagen como query.")
+               //      console.log("Cannot process empty query.");
+               //      return;
+               // }
 
                this.processingQuery = true;
 
+               let formData = new FormData();
+
+               formData.append('image', this.selectedImageQuery);
+
                axios.get(
-                    `http://127.0.0.1:5000/queryTweets?query=${this.query}&k=${this.k === '' ? -1 : this.k}`,
+                    `http://127.0.0.1:5000/queryImages?k=${this.k === '' ? -1 : this.k}`,
+                    formData,
                     {
                          headers: {
+                              'Content-Type': 'multipart/form-data',
                               'Access-Control-Allow-Origin': 'http://127.0.0.1:5000',
                          }
                     }
                ).then( (response) => {
-                    console.log("QUERY TWEETS RESPONSE:");
+                    console.log("QUERY IMAGES RESPONSE:");
                     console.log(response);
                     if (typeof response.data !== 'undefined') {
                          this.queryTime = response.data.execTime;
-                         this.tweets = response.data.tweets;
-                         console.log("RETRIEVED TWEETS:");
-                         console.log(this.tweets);
+                         this.images = response.data.images;
+                         console.log("RETRIEVED IMAGES:");
+                         console.log(this.images);
                     }
-                    this.query = '';
+                    this.selectedImageQuery = '';
+                    this.selectedImageQueryName = '';
                     this.k = '';
                     this.queryWasProcessed = true;
                     this.processingQuery = false;
