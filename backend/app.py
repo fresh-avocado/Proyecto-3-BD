@@ -45,7 +45,7 @@ def query_images():
 
     return jsonify({'images': result, 'execTime': end-start})
 
-@app.route('uploadImages', methods=['POST'])
+@app.route('/uploadImages', methods=['POST'])
 @cross_origin()
 def index_images():
     images = request.files.getlist('file')
