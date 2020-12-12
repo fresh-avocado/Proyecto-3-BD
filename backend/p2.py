@@ -46,9 +46,11 @@ def knn_r(nombre, cant):
     
     ret = list(idx.nearest(vec, cant))
 
-    ret1 = []
+    ret1 = {}
+    cont = 1
     for i in ret:
-        ret1.append(names[i])
+        ret1[cont] = names[i]
+        cont += 1
         print(names[i])
     return ret1
 
@@ -66,9 +68,11 @@ def range_q(nombre, rango):
     
     ret = list(idx.intersection(vec))
 
-    ret1 = []
+    ret1 = {}
+    cont = 1
     for i in ret:
-        ret1.append(names[i])
+        ret1[cont] = names[i]
+        cont += 1 
         print(names[i])
     return ret1
 
@@ -129,11 +133,12 @@ def knn_h(nombre, cant):
     
     results.reverse()
 
-    ret = []
-
+    ret = {}
+    cont = 1
     for i in results:
         #print(i)
-        ret.append(i[1])
+        ret[cont] = i[1]
+        cont += 1
         print(i[1])
 
     
