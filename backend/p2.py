@@ -23,7 +23,7 @@ def crear_insertar():
     np.savetxt('nombres.txt',nombres,fmt='%s')
     
     for i in nombres:
-        image = fr.load_image_file(i)
+        image = fr.load_image_file('uploads/' + i)
         encoding = fr.face_encodings(image)[0]
         feature_vectors.append(np.concatenate([encoding,encoding]))
         #print(encoding)
@@ -46,13 +46,18 @@ def knn_r(nombre, cant):
     
     ret = list(idx.nearest(vec, cant))
 
+    pasto = []
+
     ret1 = {}
     cont = 1
     for i in ret:
         ret1[cont] = names[i]
         cont += 1
         print(names[i])
-    return ret1
+
+    for key, value in ret1.items():
+        pasto.append( {'id': key, 'name': value} )
+    return pasto
 
 
     
@@ -94,7 +99,7 @@ def knn_h(nombre, cant):
     distances = []
     cont =0
     for i in nombres:
-        image2 = fr.load_image_file(i)
+        image2 = fr.load_image_file('uploads/' + i)
         encoding2 = fr.face_encodings(image2)[0]
        
         distances.append([fr.face_distance(base, encoding2)[0]*-1,i])
@@ -133,35 +138,17 @@ def knn_h(nombre, cant):
     
     results.reverse()
 
+    pasto = []
+
     ret = {}
     cont = 1
     for i in results:
         #print(i)
-        ret[cont] = i[1]
+        ret['id'] = cont
+        ret['name'] = i[1]
         cont += 1
+        pasto.append(ret)
         print(i[1])
-
-    
-
-    return ret
-    
-#========MAIN=========    
-
-#crear_insertar()
-
-#a = knn_h('Abid_Hamid_Mahmud_Al-Tikriti_0001.jpg',15)
-#b = knn_r('Abid_Hamid_Mahmud_Al-Tikriti_0001.jpg',15)
-#c = range_q('Abid_Hamid_Mahmud_Al-Tikriti_0001.jpg',15)
-
-#print(a)
-#print('\n--------------------------\n')
-#print(b)
-#print('\n--------------------------\n')
-#print(c)
-
-
-
-
-    
-
+        
+    return pasto
     

@@ -15,6 +15,9 @@
                     <h3>Query execution time: {{ queryTime }} ms.</h3>
                </div>
           </div>
+          <button class="item" v-on:click="reset()">
+               Reset
+          </button>
           <div id="file-section" class="item">
                <h2>Archivo para Indexar</h2>
                <input type="file" accept=".jpg" multiple name="file" v-on:change="prepareToUploadFile($event.target.name, $event.target.files)">
@@ -56,17 +59,28 @@ export default {
           console.log("component was created");
      },
      methods: {
+          reset() {
+               axios.get('http://127.0.0.1:5000/reset').then((response) => {
+                    console.log("Reset response: " + response.data);
+               });
+          },
           uploadImages() {
                if (this.selectedFiles.length === 0) {
                     alert("Seleccione un archivo para indexar.")
                     return;
                }
-               console.log(`FILES: ${this.selectedFiles}`);
+               console.log(this.selectedFiles);
                this.processingFile = true;
 
                let formData = new FormData();
 
-               formData.append('file', this.selectedFiles);
+               this.selectedFiles.forEach((file) => {
+                    formData.append('files', file);
+               });
+               // formData.append('files', this.selectedFiles[0]);
+
+               console.log("FORM DATA");
+               console.log(formData);
 
                axios.post(
                     'http://127.0.0.1:5000/uploadImages',
@@ -78,7 +92,7 @@ export default {
                          }
                     }
                ).then((response) => {
-                    console.log("UPLOAD FILE RESPONSE: " + response);
+                    console.log("UPLOAD FILE RESPONSE: " + response.data);
                     this.processingFile = false;
                }).catch(() => {
                     console.log("error occurred when uploading a file");
@@ -101,6 +115,8 @@ export default {
                     return;
                }
                this.selectedFiles = files;
+               console.log("user just selected files:");
+               console.log(this.selectedFiles);     
           },
           processQuery() {
                // FIXME: arreglar validación
@@ -114,10 +130,9 @@ export default {
 
                let formData = new FormData();
 
-               formData.append('image', this.selectedImageQuery);
+               formData.append('file', this.selectedImageQuery);
 
-               axios.get(
-                    `http://127.0.0.1:5000/queryImages?k=${this.k === '' ? -1 : this.k}`,
+               axios.post (`http://127.0.0.1:5000/queryImages?k=${this.k === '' ? -1 : this.k}`,
                     formData,
                     {
                          headers: {
