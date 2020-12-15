@@ -2,6 +2,8 @@ import face_recognition as fr
 from rtree import index
 import numpy as np
 from  heapq import heapify, heappush, heappop
+import os
+import time
 
 names = []
 def crear_insertar():
@@ -23,7 +25,11 @@ def crear_insertar():
     np.savetxt('nombres.txt',nombres,fmt='%s')
     
     for i in nombres:
-        image = fr.load_image_file('uploads/' + i)
+        image = fr.load_image_file(i)
+        # No tiene cara o la leyo mal
+        if not fr.face_encodings(image):
+            continue
+
         encoding = fr.face_encodings(image)[0]
         feature_vectors.append(np.concatenate([encoding,encoding]))
         #print(encoding)
@@ -53,7 +59,7 @@ def knn_r(nombre, cant):
     for i in ret:
         ret1[cont] = names[i]
         cont += 1
-        print(names[i])
+        # print(names[i])
 
     for key, value in ret1.items():
         pasto.append( {'id': key, 'name': value} )
@@ -78,7 +84,7 @@ def range_q(nombre, rango):
     for i in ret:
         ret1[cont] = names[i]
         cont += 1 
-        print(names[i])
+        # print(names[i])
     return ret1
 
 def knn_h(nombre, cant):
@@ -99,9 +105,11 @@ def knn_h(nombre, cant):
     distances = []
     cont =0
     for i in nombres:
-        image2 = fr.load_image_file('uploads/' + i)
+        image2 = fr.load_image_file(i)
+        if not fr.face_encodings(image2):
+            continue
+
         encoding2 = fr.face_encodings(image2)[0]
-       
         distances.append([fr.face_distance(base, encoding2)[0]*-1,i])
         cont+=1
     
@@ -148,7 +156,6 @@ def knn_h(nombre, cant):
         ret['name'] = i[1]
         cont += 1
         pasto.append(ret)
-        print(i[1])
+        # print(i[1])
         
     return pasto
-    

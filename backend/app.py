@@ -62,7 +62,7 @@ def index_images():
 @app.route('/reset', methods=['GET'])
 @cross_origin()
 def reset():
-    os.system("rm -rf ./uploads/* && rm rtree.dat rtree.idx nombres.txt names.txt")
+    os.system("rm -rf ./uploads/* && rm -rf ./query/* && rm rtree.dat rtree.idx nombres.txt names.txt")
     return 'Heider :)'
 
 if __name__ == '__main__':
