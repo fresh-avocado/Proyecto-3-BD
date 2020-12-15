@@ -15,9 +15,9 @@
                     <h3>Query execution time: {{ queryTime }} ms.</h3>
                </div>
           </div>
-          <button class="item" v-on:click="reset()">
+          <!-- <button class="item" v-on:click="reset()">
                Reset
-          </button>
+          </button> -->
           <div id="file-section" class="item">
                <h2>Archivo para Indexar</h2>
                <input type="file" accept=".jpg" multiple name="file" v-on:change="prepareToUploadFile($event.target.name, $event.target.files)">

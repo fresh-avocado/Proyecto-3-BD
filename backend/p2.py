@@ -25,7 +25,7 @@ def crear_insertar():
     np.savetxt('nombres.txt',nombres,fmt='%s')
     
     for i in nombres:
-        image = fr.load_image_file(i)
+        image = fr.load_image_file('uploads/' + i)
         # No tiene cara o la leyo mal
         if not fr.face_encodings(image):
             continue
@@ -105,7 +105,7 @@ def knn_h(nombre, cant):
     distances = []
     cont =0
     for i in nombres:
-        image2 = fr.load_image_file(i)
+        image2 = fr.load_image_file('uploads/' + i)
         if not fr.face_encodings(image2):
             continue
 
