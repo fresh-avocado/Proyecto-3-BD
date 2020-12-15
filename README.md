@@ -58,11 +58,15 @@ Para la implementación KNN con Rtree, se utilizó la librería ya mencionada an
 
 ### Análisis
 
-TODO
+Los resultados fueron los esperados. El KNN-secuencial se demora mucho más que el KNN con el RTree. Dándole una primera mirada a los resultados, uno podría ver que el tiempo del secuencial crece linealmente mientras que el tiempo del RTree crece de manera logarítmica. Podría surgir la pregunta, ¿por qué el KNN secuencial se demora tanto, si su complejidad es polinomial (**O**(n lg n) ) comparado con la complejidad logarítmica del RTree (**O**(lg n) base M)? La respuesta tiene que ver con el número de accesos a disco del KNN-secuencial. El KNN-secuencial, lee toda la colección de disco para hallar los K más cercanos al query, lo cual hace que el algoritmo sea bien lento, ya que los accesos a disco son lineales y acceder a disco es muy costoso. Por otro lado, el RTree solo hace un número logarítmico de accesos a disco, lo cual lo hace mucho más rápido que el algoritmo secuencial.
 
 ### Discusión
 
-TODO
+Los algoritmos de recuperación KNN son muy usados en este tipo de aplicaciones, pero también existen otros como los algoritmos de búsqueda por rango. En este caso, nosotros implementamos, por mero tema de experimentación, un algoritmo de búsqueda por rango (recibe un radio **r** en vez de un **k**), aunque al final no experimentamos mucho con él. Este procedimiento se hizo basándonos en las funciones implementadas de la librería Rtree. El problema de este algoritmo para este tipo de programas, es que el rango no tiene una unidad definida, entonces es un poco arbitrario asignar un rango ‘r’ para la búsqueda, ya que nos podría retornar muy pocos o muchos resultados. En otras palabras, no tenemos mucho control sobre el número de datos que serán retornados, por lo que no termina siendo práctico para estos propósitos.
+
+Sería interesante comparar la performance de la búsqueda KNN entre el Rtree que usamos (en disco) y uno que esté cargado en RAM. Por obvias razones, los tests que corrimos tuvieron que hacerse con la primera opción, pues era simplemente inviable cargar datos de casi 13000 imágenes para ser procesadas en ram dentro de la estructura del Rtree. Para temas de búsquedas de usuarios, en realidad no importa mucho porque el tiempo que nos da el Rtree en disco es despreciable para la percepción humana, pero si hablamos de búsquedas masivas para investigación o industria, ahí sí nos interesa la velocidad y quizás sería más interesante hacerlo todo en RAM, por supuesto, si contamos con una cantidad significativa de RAM.
+
+Un área de aplicación del KNN es *machine learning*. Se usa el algoritmo KNN para clasificar, un nuevo elemento. Por ejemplo, si tenemos una base de datos de imágenes de frutas y queremos insertar una manzana, hacemos la búsqueda KNN de esa manzana y dependiendo de la clasificación de la mayoría de sus K más cercanos, se le asigna esa misma clasificación. En finanzas, también se usa para predecir la calificación crediticia de un cliente para un banco, de tal manera que el banco pueda medir el posible riesgo asociado a prestarle dinero a ese cliente. También se usa para predecir el candidato por el que un ciudadano podría votar. En conclusión, el KNN es un algoritmo simple que tiene bastantes aplicaciones muy interesantes en distintos ámbitos y su aplicación eficiente se puede dar, en base a los experimentos hechos en este proyecto, usando una estructura de datos como el RTree.
 
 # Instrucciones
 
